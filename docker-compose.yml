@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+
+  cassandra:
+    image: cassandra:latest
+    ports:
+    - 127.0.0.1:9042:9042
+    restart: always
