@@ -7,15 +7,15 @@ This is an example project showing how to use [akka-entity-replication](https://
 To start cluster, run following commands on separated terminals.
 
 ```bash
-sbt runNode1
+sbt --batch runNode1
 ```
 
 ```bash
-sbt runNode2
+sbt --batch runNode2
 ```
 
 ```bash
-sbt runNode3
+sbt --batch runNode3
 ```
 
 You can run the following command to see application behavior.
