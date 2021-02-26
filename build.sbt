@@ -1,6 +1,6 @@
 import Dependencies._
 
-ThisBuild / scalaVersion := "2.12.12"
+ThisBuild / scalaVersion := "2.13.4"
 ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / organization := "com.example"
 ThisBuild / organizationName := "example"
@@ -12,11 +12,12 @@ lazy val root = (project in file("."))
     name := "sample-akka-entity-replication",
     resolvers += Resolver.sonatypeRepo("snapshots"),
     libraryDependencies ++= Seq(
-        "io.github.lerna-stack" %% "akka-entity-replication" % "0.1.0-SNAPSHOT",
-        "com.typesafe.akka"     %% "akka-http"               % "10.2.1",
-        "com.typesafe.akka"     %% "akka-cluster"            % AkkaVersion,
-        "com.typesafe.akka"     %% "akka-slf4j"              % AkkaVersion,
-        "ch.qos.logback"         % "logback-classic"         % "1.2.3",
+        "io.github.lerna-stack" %% "akka-entity-replication"    % "0.1.1+51-0b9f8fad-SNAPSHOT",
+        "com.typesafe.akka"     %% "akka-persistence-cassandra" % "1.0.4",
+        "com.typesafe.akka"     %% "akka-http"                  % "10.2.1",
+        "com.typesafe.akka"     %% "akka-cluster"               % AkkaVersion,
+        "com.typesafe.akka"     %% "akka-slf4j"                 % AkkaVersion,
+        "ch.qos.logback"         % "logback-classic"            % "1.2.3",
         scalaTest                % Test,
       ),
     fork in runNode1 := true,
@@ -24,22 +25,22 @@ lazy val root = (project in file("."))
         "-Dhttp.port=8080",
         "-Dakka.remote.artery.canonical.port=2551",
         "-Dakka.cluster.roles.0=replica-group-1",
-        "-Dlerna.akka.entityreplication.raft.persistence.cassandra.journal.keyspace-autocreate=true",
-        "-Dlerna.akka.entityreplication.raft.persistence.cassandra.journal.tables-autocreate=true",
-        "-Dlerna.akka.entityreplication.raft.persistence.cassandra.snapshot.keyspace-autocreate=true",
-        "-Dlerna.akka.entityreplication.raft.persistence.cassandra.snapshot.tables-autocreate=true",
-        "-Dlerna.akka.entityreplication.raft.eventhandler.persistence.cassandra.journal.keyspace-autocreate=true",
-        "-Dlerna.akka.entityreplication.raft.eventhandler.persistence.cassandra.journal.tables-autocreate=true",
+        "-Dakka-entity-replication.raft.persistence.cassandra.journal.keyspace-autocreate=true",
+        "-Dakka-entity-replication.raft.persistence.cassandra.journal.tables-autocreate=true",
+        "-Dakka-entity-replication.raft.persistence.cassandra.snapshot.keyspace-autocreate=true",
+        "-Dakka-entity-replication.raft.persistence.cassandra.snapshot.tables-autocreate=true",
+        "-Dakka-entity-replication.eventhandler.persistence.cassandra.journal.keyspace-autocreate=true",
+        "-Dakka-entity-replication.eventhandler.persistence.cassandra.journal.tables-autocreate=true",
       ),
     fork in runNode2 := true,
     javaOptions in runNode2 ++= Seq(
-        "-Dhttp.port=8081",
+        "-Dhttp.port=18081",
         "-Dakka.remote.artery.canonical.port=2552",
         "-Dakka.cluster.roles.0=replica-group-2",
       ),
     fork in runNode3 := true,
     javaOptions in runNode3 ++= Seq(
-        "-Dhttp.port=8082",
+        "-Dhttp.port=18082",
         "-Dakka.remote.artery.canonical.port=2553",
         "-Dakka.cluster.roles.0=replica-group-3",
       ),
