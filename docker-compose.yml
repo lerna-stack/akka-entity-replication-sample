@@ -7,3 +7,66 @@ services:
     ports:
     - 127.0.0.1:9042:9042
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'SELECT now() FROM system.local;'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  node1:
+    image: sample-akka-entity-replication:0.1.0-SNAPSHOT
+    restart: always
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    environment:
+      JAVA_OPTS: >-
+        -Dhttp.host=node1
+        -Dakka.cluster.roles.0=replica-group-1
+        -Dakka.remote.artery.canonical.hostname=node1
+        -Dakka.cluster.seed-nodes.0=akka://ExampleSystem@${SEED:-node1}:2551
+        -Ddatastax-java-driver.basic.contact-points.0=cassandra:9042
+        -Dakka-entity-replication.raft.persistence.cassandra.journal.keyspace-autocreate=true
+        -Dakka-entity-replication.raft.persistence.cassandra.journal.tables-autocreate=true
+        -Dakka-entity-replication.raft.persistence.cassandra.snapshot.keyspace-autocreate=true
+        -Dakka-entity-replication.raft.persistence.cassandra.snapshot.tables-autocreate=true
+        -Dakka-entity-replication.eventhandler.persistence.cassandra.journal.keyspace-autocreate=true
+        -Dakka-entity-replication.eventhandler.persistence.cassandra.journal.tables-autocreate=true
+
+  node2:
+    image: sample-akka-entity-replication:0.1.0-SNAPSHOT
+    restart: always
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    environment:
+      JAVA_OPTS: >-
+        -Dhttp.host=node2
+        -Dakka.cluster.roles.0=replica-group-2
+        -Dakka.remote.artery.canonical.hostname=node2
+        -Dakka.cluster.seed-nodes.0=akka://ExampleSystem@node1:2551
+        -Ddatastax-java-driver.basic.contact-points.0=cassandra:9042
+
+  node3:
+    image: sample-akka-entity-replication:0.1.0-SNAPSHOT
+    restart: always
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    environment:
+      JAVA_OPTS: >-
+        -Dhttp.host=node3
+        -Dakka.cluster.roles.0=replica-group-3
+        -Dakka.remote.artery.canonical.hostname=node3
+        -Dakka.cluster.seed-nodes.0=akka://ExampleSystem@node1:2551
+        -Ddatastax-java-driver.basic.contact-points.0=cassandra:9042
+
+  haproxy:
+    build:
+      context: ./docker/haproxy
+    restart: always
+    volumes:
+      - ./docker/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    ports:
+      - 127.0.0.1:8080:8080
+      - 127.0.0.1:8081:8081

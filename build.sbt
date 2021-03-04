@@ -8,6 +8,7 @@ ThisBuild / organizationName := "example"
 val AkkaVersion = "2.6.9"
 
 lazy val root = (project in file("."))
+  .enablePlugins(JavaAppPackaging, DockerPlugin)
   .settings(
     name := "sample-akka-entity-replication",
     resolvers += Resolver.sonatypeRepo("snapshots"),
@@ -20,6 +21,8 @@ lazy val root = (project in file("."))
         "ch.qos.logback"         % "logback-classic"            % "1.2.3",
         scalaTest                % Test,
       ),
+    dockerBaseImage := "openjdk:11-slim",
+    dockerExposedPorts := Seq(2551, 8080),
     fork in runNode1 := true,
     javaOptions in runNode1 ++= Seq(
         "-Dhttp.port=8080",
