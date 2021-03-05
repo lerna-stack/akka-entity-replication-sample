@@ -20,12 +20,12 @@ object BankAccountActor {
   final case class BalanceChanged(balance: Int, event: DomainEvent)
 
   sealed trait DomainEvent
-  final case class Deposited(amount: Int)  extends DomainEvent
-  final case class Withdrawed(amount: Int) extends DomainEvent
+  final case class Deposited(amount: Int) extends DomainEvent
+  final case class Withdrew(amount: Int)  extends DomainEvent
 
   final case class Account(balance: Int) {
-    def deposit(amount: Int)  = copy(balance = balance + amount)
-    def withdraw(amount: Int) = copy(balance = balance - amount)
+    def deposit(amount: Int): Account  = copy(balance = balance + amount)
+    def withdraw(amount: Int): Account = copy(balance = balance - amount)
   }
 
   val extractEntityId: ReplicationRegion.ExtractEntityId = {
@@ -68,7 +68,7 @@ class BankAccountActor extends ReplicationActor[Account] {
         logging.info(s"${LEADER_LABEL} Withdraw: $result")
       }
     case Withdraw(_, amount) =>
-      replicate(Withdrawed(amount)) { event =>
+      replicate(Withdrew(amount)) { event =>
         updateState(event)
         val result = BalanceChanged(account.balance, event)
         sender() ! result
@@ -96,7 +96,7 @@ class BankAccountActor extends ReplicationActor[Account] {
     event match {
       case Deposited(amount) =>
         account = account.deposit(amount)
-      case Withdrawed(amount) =>
+      case Withdrew(amount) =>
         account = account.withdraw(amount)
     }
 }
