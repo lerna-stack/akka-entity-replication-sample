@@ -37,6 +37,12 @@ object BankAccountActor {
   val extractShardId: ReplicationRegion.ExtractShardId = {
     case command: Command => (Math.abs(command.accountNo.hashCode) % numberOfShards).toString
   }
+
+  val ANSI_RESET     = "\u001B[0m"
+  val ANSI_YELLOW    = "\u001B[33m"
+  val ANSI_BLUE      = "\u001B[34m"
+  val LEADER_LABEL   = s"${ANSI_YELLOW}[LEADER]${ANSI_RESET}"
+  val FOLLOWER_LABEL = s"${ANSI_BLUE}[FOLLOWER]${ANSI_RESET}"
 }
 
 import BankAccountActor._
@@ -53,32 +59,33 @@ class BankAccountActor extends ReplicationActor[Account] {
         updateState(event)
         val result = BalanceChanged(account.balance, event)
         sender() ! result
-        logging.info(s"Deposit: $result")
+        logging.info(s"${LEADER_LABEL} Deposit: $result")
       }
     case Withdraw(_, amount) if amount > account.balance =>
       ensureConsistency {
         val result = ShortBalance
         sender() ! result
-        logging.info(s"Withdraw: $result")
+        logging.info(s"${LEADER_LABEL} Withdraw: $result")
       }
     case Withdraw(_, amount) =>
       replicate(Withdrawed(amount)) { event =>
         updateState(event)
         val result = BalanceChanged(account.balance, event)
         sender() ! result
-        logging.info(s"Withdraw: $result")
+        logging.info(s"${LEADER_LABEL} Withdraw: $result")
       }
     case GetBalance(_) =>
       ensureConsistency {
         val result = AccountBalance(account.balance)
         sender() ! AccountBalance(account.balance)
-        logging.info(s"GetBalance: $result")
+        logging.info(s"${LEADER_LABEL} GetBalance: $result")
       }
   }
 
   override def receiveReplica: Receive = {
     case event: DomainEvent =>
       updateState(event)
+      logging.info(s"${FOLLOWER_LABEL} receiveReplica: {} account: {}", event, account)
     case SnapshotOffer(snapshot: Account) =>
       account = snapshot
   }
