@@ -16,10 +16,9 @@ object Main extends App {
   implicit val dispatcher: ExecutionContextExecutor = system.dispatcher
 
   val cluster = Cluster(system)
-
-  val route = new AccountRoute(system).route
-
-  Http().newServerAt(config.getString("http.host"), config.getInt("http.port")).bind(route)
-
+  cluster.registerOnMemberUp {
+    val route = new AccountRoute(system).route
+    Http().newServerAt(config.getString("http.host"), config.getInt("http.port")).bind(route)
+  }
   Await.result(system.whenTerminated, Duration.Inf)
 }
