@@ -1,4 +1,4 @@
-# sample-akka-entity-replication
+# akka-entity-replication-sample
 
 This is an example project showing how to use [akka-entity-replication](https://github.com/lerna-stack/akka-entity-replication).
 
@@ -67,3 +67,9 @@ You can run the following command to see application behavior.
 ```bash
 bin/demo-request.sh 100 # An account No must be pass!
 ```
+
+## License
+
+akka-entity-replication-sample is released under the terms of the [Apache License Version 2.0](LICENSE).
+
+© 2021 TIS Inc.
