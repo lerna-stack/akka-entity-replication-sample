@@ -64,6 +64,9 @@ services:
   haproxy:
     build:
       context: ./docker/haproxy
+      args:
+        http_proxy:
+        https_proxy:
     restart: always
     volumes:
       - ./docker/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
