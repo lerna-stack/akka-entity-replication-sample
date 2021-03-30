@@ -5,7 +5,7 @@ ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / organization := "com.example"
 ThisBuild / organizationName := "example"
 
-val AkkaVersion = "2.6.9"
+val AkkaVersion = "2.6.12"
 
 lazy val root = (project in file("."))
   .enablePlugins(JavaAppPackaging, DockerPlugin)
@@ -13,13 +13,14 @@ lazy val root = (project in file("."))
     name := "sample-akka-entity-replication",
     resolvers += Resolver.sonatypeRepo("snapshots"),
     libraryDependencies ++= Seq(
-        "io.github.lerna-stack" %% "akka-entity-replication"    % "0.1.1+51-0b9f8fad-SNAPSHOT",
-        "com.typesafe.akka"     %% "akka-persistence-cassandra" % "1.0.4",
-        "com.typesafe.akka"     %% "akka-http"                  % "10.2.1",
-        "com.typesafe.akka"     %% "akka-cluster"               % AkkaVersion,
-        "com.typesafe.akka"     %% "akka-slf4j"                 % AkkaVersion,
-        "ch.qos.logback"         % "logback-classic"            % "1.2.3",
-        scalaTest                % Test,
+        "com.lerna-stack"   %% "akka-entity-replication"    % "1.0.0",
+        "com.typesafe.akka" %% "akka-persistence-cassandra" % "1.0.4",
+        "com.typesafe.akka" %% "akka-http"                  % "10.2.1",
+        "com.typesafe.akka" %% "akka-cluster"               % AkkaVersion,
+        "com.typesafe.akka" %% "akka-slf4j"                 % AkkaVersion,
+        "ch.qos.logback"     % "logback-classic"            % "1.2.3",
+        scalaTest            % Test,
+        "com.typesafe.akka" %% "akka-testkit"               % AkkaVersion % Test,
       ),
     dockerBaseImage := "openjdk:11-slim",
     dockerExposedPorts := Seq(2551, 8080),
