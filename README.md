@@ -42,6 +42,12 @@ You can run the following command to see application behavior.
 bin/demo-request.sh 100 # An account No must be pass!
 ```
 
+To stop the containers and remove all data, run the following command.
+
+```bash
+docker-compose down --volumes
+```
+
 ### 🔧 Run with sbt
 
 To start cluster, run following commands on separated terminals.
@@ -66,6 +72,12 @@ You can run the following command to see application behavior.
 
 ```bash
 bin/demo-request.sh 100 # An account No must be pass!
+```
+
+To stop the cassandra container and remove all data, run the following command.
+
+```bash
+docker-compose down --volumes
 ```
 
 ## License
