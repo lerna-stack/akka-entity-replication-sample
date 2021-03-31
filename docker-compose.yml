@@ -14,7 +14,7 @@ services:
       retries: 5
 
   node1:
-    image: sample-akka-entity-replication:0.1.0-SNAPSHOT
+    image: sample-akka-entity-replication:1.0.0
     restart: always
     depends_on:
       cassandra:
@@ -34,7 +34,7 @@ services:
         -Dakka-entity-replication.eventhandler.persistence.cassandra.journal.tables-autocreate=true
 
   node2:
-    image: sample-akka-entity-replication:0.1.0-SNAPSHOT
+    image: sample-akka-entity-replication:1.0.0
     restart: always
     depends_on:
       cassandra:
@@ -48,7 +48,7 @@ services:
         -Ddatastax-java-driver.basic.contact-points.0=cassandra:9042
 
   node3:
-    image: sample-akka-entity-replication:0.1.0-SNAPSHOT
+    image: sample-akka-entity-replication:1.0.0
     restart: always
     depends_on:
       cassandra:
