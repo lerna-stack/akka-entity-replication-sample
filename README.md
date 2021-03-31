@@ -2,9 +2,9 @@
 
 This is an example project showing how to use [akka-entity-replication](https://github.com/lerna-stack/akka-entity-replication).
 
-## Usage
+## How to run this app
 
-### Run with docker-compose
+### 🐳 Run with docker-compose
 
 Create this app docker image.
 
@@ -42,7 +42,7 @@ You can run the following command to see application behavior.
 bin/demo-request.sh 100 # An account No must be pass!
 ```
 
-### Run with sbt
+### 🔧 Run with sbt
 
 To start cluster, run following commands on separated terminals.
 
