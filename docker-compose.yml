@@ -5,7 +5,7 @@ services:
   cassandra:
     image: cassandra:latest
     ports:
-    - 127.0.0.1:9042:9042
+    - 127.0.0.1:${CASSANDRA_PORT:-9042}:9042
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "cqlsh -e 'SELECT now() FROM system.local;'"]
@@ -71,5 +71,5 @@ services:
     volumes:
       - ./docker/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
     ports:
-      - 127.0.0.1:8080:8080
-      - 127.0.0.1:8081:8081
+      - 127.0.0.1:${APP_PORT:-8080}:8080
+      - 127.0.0.1:${STATS_PORT:-8081}:8081
