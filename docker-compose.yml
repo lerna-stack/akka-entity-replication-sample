@@ -71,5 +71,5 @@ services:
     volumes:
       - ./docker/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
     ports:
-      - 127.0.0.1:8080:8080
-      - 127.0.0.1:8081:8081
+      - 127.0.0.1:${APP_PORT:-8080}:8080
+      - 127.0.0.1:${STATS_PORT:-8081}:8081
