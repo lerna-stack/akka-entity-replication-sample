@@ -5,7 +5,7 @@ services:
   cassandra:
     image: cassandra:latest
     ports:
-    - 127.0.0.1:9042:9042
+    - 127.0.0.1:${CASSANDRA_PORT:-9042}:9042
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "cqlsh -e 'SELECT now() FROM system.local;'"]
