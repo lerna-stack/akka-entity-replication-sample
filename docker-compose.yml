@@ -30,8 +30,8 @@ services:
         -Dakka-entity-replication.raft.persistence.cassandra.journal.tables-autocreate=true
         -Dakka-entity-replication.raft.persistence.cassandra.snapshot.keyspace-autocreate=true
         -Dakka-entity-replication.raft.persistence.cassandra.snapshot.tables-autocreate=true
-        -Dakka-entity-replication.eventhandler.persistence.cassandra.journal.keyspace-autocreate=true
-        -Dakka-entity-replication.eventhandler.persistence.cassandra.journal.tables-autocreate=true
+        -Dakka-entity-replication.eventsourced.persistence.cassandra.journal.keyspace-autocreate=true
+        -Dakka-entity-replication.eventsourced.persistence.cassandra.journal.tables-autocreate=true
 
   node2:
     image: sample-akka-entity-replication:1.0.0
