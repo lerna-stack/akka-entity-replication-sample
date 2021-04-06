@@ -33,8 +33,8 @@ lazy val root = (project in file("."))
         "-Dakka-entity-replication.raft.persistence.cassandra.journal.tables-autocreate=true",
         "-Dakka-entity-replication.raft.persistence.cassandra.snapshot.keyspace-autocreate=true",
         "-Dakka-entity-replication.raft.persistence.cassandra.snapshot.tables-autocreate=true",
-        "-Dakka-entity-replication.eventhandler.persistence.cassandra.journal.keyspace-autocreate=true",
-        "-Dakka-entity-replication.eventhandler.persistence.cassandra.journal.tables-autocreate=true",
+        "-Dakka-entity-replication.eventsourced.persistence.cassandra.journal.keyspace-autocreate=true",
+        "-Dakka-entity-replication.eventsourced.persistence.cassandra.journal.tables-autocreate=true",
       ),
     fork in runNode2 := true,
     javaOptions in runNode2 ++= Seq(
