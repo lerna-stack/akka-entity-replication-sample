@@ -1,50 +1,47 @@
 package example
 
-import akka.actor.ActorSystem
+import akka.actor.typed.ActorSystem
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
-import akka.pattern.ask
 import akka.util.Timeout
-import lerna.akka.entityreplication.{ ClusterReplication, ClusterReplicationSettings }
+import lerna.akka.entityreplication.typed._
 
 import scala.concurrent.ExecutionContextExecutor
 import scala.concurrent.duration._
 
-class AccountRoute(system: ActorSystem) {
+class AccountRoute(system: ActorSystem[_]) {
 
-  private[this] val region = ClusterReplication(system).start(
-    typeName = "BankAccount",
-    entityProps = BankAccountActor.props,
-    settings = ClusterReplicationSettings(system),
-    extractEntityId = BankAccountActor.extractEntityId,
-    extractShardId = BankAccountActor.extractShardId,
-  )
+  private[this] val replication = ClusterReplication(system)
+
+  replication.init(ReplicatedEntity(BankAccountBehavior.TypeKey)(context => BankAccountBehavior(context)))
 
   implicit val timeout: Timeout                     = Timeout(10.seconds)
-  implicit val dispatcher: ExecutionContextExecutor = system.dispatcher
+  implicit val dispatcher: ExecutionContextExecutor = system.executionContext
 
   val route: Route = pathPrefix("accounts" / Segment) { accountNo =>
-    concat(
-      get {
-        complete {
-          (region ? BankAccountActor.GetBalance(accountNo)).map(_.toString + "\n")
-        }
-      },
-      (post & path("deposit")) {
-        parameters("amount") { amount =>
+    {
+      val entityRef = replication.entityRefFor(BankAccountBehavior.TypeKey, accountNo)
+      concat(
+        get {
           complete {
-            (region ? BankAccountActor.Deposit(accountNo, amount.toInt)).map(_.toString + "\n")
+            (entityRef ? BankAccountBehavior.GetBalance).map(_.toString + "\n")
           }
-        }
-      },
-      (post & path("withdraw")) {
-        parameters("amount") { amount =>
-          complete {
-            (region ? BankAccountActor.Withdraw(accountNo, amount.toInt)).map(_.toString + "\n")
+        },
+        (post & path("deposit")) {
+          parameters("amount", "transactionId") { (amount, transactionId) =>
+            complete {
+              (entityRef ? (BankAccountBehavior.Deposit(transactionId.toLong, amount.toInt, _))).map(_.toString + "\n")
+            }
           }
-        }
-      },
-    )
+        },
+        (post & path("withdraw")) {
+          parameters("amount", "transactionId") { (amount, transactionId) =>
+            complete {
+              (entityRef ? (BankAccountBehavior.Withdraw(transactionId.toLong, amount.toInt, _))).map(_.toString + "\n")
+            }
+          }
+        },
+      )
+    }
   }
-
 }

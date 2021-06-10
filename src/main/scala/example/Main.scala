@@ -1,6 +1,7 @@
 package example
 
-import akka.actor.ActorSystem
+import akka.actor.typed.ActorSystem
+import akka.actor.typed.scaladsl.Behaviors
 import akka.cluster.Cluster
 import akka.http.scaladsl.Http
 import com.typesafe.config.ConfigFactory
@@ -12,8 +13,8 @@ object Main extends App {
 
   val config = ConfigFactory.load()
 
-  implicit val system: ActorSystem                  = ActorSystem("ExampleSystem")
-  implicit val dispatcher: ExecutionContextExecutor = system.dispatcher
+  implicit val system: ActorSystem[_]               = ActorSystem(Behaviors.empty, "ExampleSystem")
+  implicit val dispatcher: ExecutionContextExecutor = system.executionContext
 
   val cluster = Cluster(system)
   cluster.registerOnMemberUp {
