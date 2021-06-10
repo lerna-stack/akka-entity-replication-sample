@@ -13,7 +13,7 @@ lazy val root = (project in file("."))
     name := "sample-akka-entity-replication",
     resolvers += Resolver.sonatypeRepo("snapshots"),
     libraryDependencies ++= Seq(
-        "com.lerna-stack"   %% "akka-entity-replication"    % "1.0.0",
+        "com.lerna-stack"   %% "akka-entity-replication"    % "1.0.0+142-165d1ced-SNAPSHOT",
         "com.typesafe.akka" %% "akka-persistence-cassandra" % "1.0.4",
         "com.typesafe.akka" %% "akka-http"                  % "10.2.1",
         "com.typesafe.akka" %% "akka-cluster"               % AkkaVersion,
