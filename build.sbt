@@ -21,6 +21,7 @@ lazy val root = (project in file("."))
         "ch.qos.logback"     % "logback-classic"            % "1.2.3",
         scalaTest            % Test,
         "com.typesafe.akka" %% "akka-testkit"               % AkkaVersion % Test,
+        "com.typesafe.akka" %% "akka-actor-testkit-typed"   % AkkaVersion % Test,
       ),
     dockerBaseImage := "openjdk:11-slim",
     dockerExposedPorts := Seq(2551, 8080),
