@@ -1,5 +1,5 @@
 package example
-import akka.actor.typed.scaladsl.Behaviors
+import akka.actor.typed.scaladsl.{ ActorContext, Behaviors }
 import akka.actor.typed.{ ActorRef, Behavior }
 import lerna.akka.entityreplication.typed._
 
@@ -44,14 +44,16 @@ object BankAccountBehavior {
     def recordEvent(transactionId: Long, event: DomainEvent): Account =
       copy(resentTransactions = (resentTransactions + (transactionId -> event)).takeRight(maxResentTransactionSize))
 
-    def applyCommand(command: Command): Effect =
+    def applyCommand(command: Command, context: ActorContext[Command]): Effect =
       command match {
         case Deposit(transactionId, amount, replyTo) =>
           if (resentTransactions.contains(transactionId)) {
             Effect.reply(replyTo)(DepositSucceeded(balance))
           } else {
+            val event = Deposited(transactionId, amount)
             Effect
-              .replicate(Deposited(transactionId, amount))
+              .replicate(event)
+              .thenRun(logEvent(event, context))
               .thenReply(replyTo)(state => DepositSucceeded(state.balance))
           }
         case Withdraw(transactionId, amount, replyTo) =>
@@ -66,12 +68,16 @@ object BankAccountBehavior {
             // Receive an unknown transaction
             case None =>
               if (balance < amount) {
+                val event = BalanceShorted(transactionId)
                 Effect
-                  .replicate(BalanceShorted(transactionId))
+                  .replicate(event)
+                  .thenRun(logEvent(event, context))
                   .thenReply(replyTo)(_ => ShortBalance())
               } else {
+                val event = BalanceShorted(transactionId)
                 Effect
-                  .replicate(Withdrew(transactionId, amount))
+                  .replicate(event)
+                  .thenRun(logEvent(event, context))
                   .thenReply(replyTo)(state => WithdrawSucceeded(state.balance))
               }
           }
@@ -89,6 +95,14 @@ object BankAccountBehavior {
         case Withdrew(transactionId, amount)  => withdraw(amount).recordEvent(transactionId, event)
         case BalanceShorted(transactionId)    => recordEvent(transactionId, event)
       }
+
+    private[this] def logEvent(event: DomainEvent, context: ActorContext[Command])(state: Account): Unit = {
+      val ANSI_YELLOW = "\u001B[33m"
+      val ANSI_RESET  = "\u001B[0m"
+      context.log.info(
+        s"${ANSI_YELLOW}[LEADER]${ANSI_RESET} $event [balance: ${state.balance}, resent-transactions: ${state.resentTransactions.size}]",
+      )
+    }
   }
 
   def apply(entityContext: ReplicatedEntityContext[Command]): Behavior[Command] = {
@@ -98,7 +112,7 @@ object BankAccountBehavior {
       ReplicatedEntityBehavior[Command, DomainEvent, Account](
         entityContext,
         emptyState = Account(BigDecimal(0), ListMap()),
-        commandHandler = (state, cmd) => state.applyCommand(cmd),
+        commandHandler = (state, cmd) => state.applyCommand(cmd, context),
         eventHandler = (state, evt) => state.applyEvent(evt),
       ).withStopMessage(Stop())
     }
