@@ -10,6 +10,9 @@
 <!--    <logger level="DEBUG" name="lerna.akka.entityreplication" />-->
      <logger level="INFO" name="example" />
 
+    <!-- FIXME: Should be able to specify user-defined package or class to manage log -->
+     <logger level="INFO" name="lerna.akka.entityreplication.typed.internal.behavior" />
+
     <root level="ERROR">
         <appender-ref ref="STDOUT"/>
     </root>
