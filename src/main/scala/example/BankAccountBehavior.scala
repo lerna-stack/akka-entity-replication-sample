@@ -107,6 +107,8 @@ object BankAccountBehavior {
 
   def apply(entityContext: ReplicatedEntityContext[Command]): Behavior[Command] = {
     Behaviors.setup { context =>
+      // This is highly recommended to identify the source of log outputs
+      context.setLoggerName(BankAccountBehavior.getClass)
       // ReceiveTimeout will trigger Effect.passivate()
       context.setReceiveTimeout(1.minute, ReceiveTimeout())
       ReplicatedEntityBehavior[Command, DomainEvent, Account](
