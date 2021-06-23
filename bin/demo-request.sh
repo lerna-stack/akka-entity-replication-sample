@@ -42,5 +42,7 @@ function decorate_stdout {
 
 while sleep 0.1
 do
-  curl --noproxy localhost --max-time 1 -sS -X POST "localhost:${APP_PORT:-8080}/accounts/${account_no}/deposit?amount=100" 1> >(decorate_stdin) 2> >(decorate_stdout)
+  curl --noproxy localhost --max-time 1 --fail -sS -X POST \
+    "localhost:${APP_PORT:-8080}/accounts/${account_no}/deposit?amount=100&transactionId=$(date +%s%3N)" \
+    1> >(decorate_stdin) 2> >(decorate_stdout)
 done
