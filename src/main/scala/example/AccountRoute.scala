@@ -28,16 +28,16 @@ class AccountRoute(system: ActorSystem[_]) {
           }
         },
         (post & path("deposit")) {
-          parameters("amount", "transactionId") { (amount, transactionId) =>
+          parameters("amount".as[Int], "transactionId".as[Long]) { (amount, transactionId) =>
             complete {
-              (entityRef ? (BankAccountBehavior.Deposit(transactionId.toLong, amount.toInt, _))).map(_.toString + "\n")
+              (entityRef ? (BankAccountBehavior.Deposit(transactionId, amount, _))).map(_.toString + "\n")
             }
           }
         },
         (post & path("withdraw")) {
-          parameters("amount", "transactionId") { (amount, transactionId) =>
+          parameters("amount".as[Int], "transactionId".as[Long]) { (amount, transactionId) =>
             complete {
-              (entityRef ? (BankAccountBehavior.Withdraw(transactionId.toLong, amount.toInt, _))).map(_.toString + "\n")
+              (entityRef ? (BankAccountBehavior.Withdraw(transactionId, amount, _))).map(_.toString + "\n")
             }
           }
         },
