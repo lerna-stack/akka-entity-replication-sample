@@ -74,7 +74,7 @@ object BankAccountBehavior {
                   .thenRun(logEvent(event, context))
                   .thenReply(replyTo)(_ => ShortBalance())
               } else {
-                val event = BalanceShorted(transactionId)
+                val event = Withdrew(transactionId, amount)
                 Effect
                   .replicate(event)
                   .thenRun(logEvent(event, context))
