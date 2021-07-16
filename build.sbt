@@ -1,7 +1,7 @@
 import Dependencies._
 
 ThisBuild / scalaVersion := "2.13.4"
-ThisBuild / version := "1.0.0"
+ThisBuild / version := "2021.7.0"
 ThisBuild / organization := "com.example"
 ThisBuild / organizationName := "example"
 
