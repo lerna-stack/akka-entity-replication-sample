@@ -80,6 +80,10 @@ To stop the cassandra container and remove all data, run the following command.
 docker-compose down --volumes
 ```
 
+
+## Versioning Strategy
+We use the [Calendar Versioning](https://calver.org/) `YYYY.MM.MICRO`. 
+
 ## License
 
 akka-entity-replication-sample is released under the terms of the [Apache License Version 2.0](LICENSE).
