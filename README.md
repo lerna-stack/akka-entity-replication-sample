@@ -1,5 +1,7 @@
 # akka-entity-replication-sample
 
+[![](https://img.shields.io/github/v/release/lerna-stack/akka-entity-replication-sample)](https://github.com/lerna-stack/akka-entity-replication-sample/releases/latest)
+
 This is an example project showing how to use [akka-entity-replication](https://github.com/lerna-stack/akka-entity-replication).
 
 ## How to run this app
