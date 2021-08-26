@@ -41,7 +41,7 @@ docker-compose logs -f --tail=10 haproxy
 You can run the following command to see application behavior.
 
 ```bash
-bin/demo-request.sh 100 # An account No must be pass!
+docker-compose run --rm demo-request 100 # An account No must be pass!
 ```
 
 To stop the containers and remove all data, run the following command.
