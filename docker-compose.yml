@@ -73,3 +73,16 @@ services:
     ports:
       - 127.0.0.1:${APP_PORT:-8080}:8080
       - 127.0.0.1:${STATS_PORT:-8081}:8081
+
+  demo-request:
+    profiles: ['oneshot']
+    build:
+      context: ./docker/demo-request
+      args:
+        http_proxy:
+        https_proxy:
+    volumes:
+      - ./bin/demo-request.sh:/usr/local/bin/demo-request
+    entrypoint: ['/usr/local/bin/demo-request']
+    environment:
+      APP_HOST: haproxy
