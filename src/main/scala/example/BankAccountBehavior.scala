@@ -31,7 +31,7 @@ object BankAccountBehavior {
 
   type Effect = lerna.akka.entityreplication.typed.Effect[DomainEvent, Account]
 
-  final case class Account(balance: BigDecimal, resentTransactions: ListMap[Long, DomainEvent]) {
+  final case class Account(balance: BigDecimal, recentTransactions: ListMap[Long, DomainEvent]) {
 
     def deposit(amount: BigDecimal): Account =
       copy(balance = balance + amount)
@@ -39,15 +39,15 @@ object BankAccountBehavior {
     def withdraw(amount: BigDecimal): Account =
       copy(balance = balance - amount)
 
-    private[this] val maxResentTransactionSize = 30
+    private[this] val maxRecentTransactionSize = 30
 
     def recordEvent(transactionId: Long, event: DomainEvent): Account =
-      copy(resentTransactions = (resentTransactions + (transactionId -> event)).takeRight(maxResentTransactionSize))
+      copy(recentTransactions = (recentTransactions + (transactionId -> event)).takeRight(maxRecentTransactionSize))
 
     def applyCommand(command: Command, context: ActorContext[Command]): Effect =
       command match {
         case Deposit(transactionId, amount, replyTo) =>
-          if (resentTransactions.contains(transactionId)) {
+          if (recentTransactions.contains(transactionId)) {
             Effect.reply(replyTo)(DepositSucceeded(balance))
           } else {
             val event = Deposited(transactionId, amount)
@@ -57,7 +57,7 @@ object BankAccountBehavior {
               .thenReply(replyTo)(state => DepositSucceeded(state.balance))
           }
         case Withdraw(transactionId, amount, replyTo) =>
-          resentTransactions.get(transactionId) match {
+          recentTransactions.get(transactionId) match {
             // Receive a known transaction: replies message based on stored event in resetTransactions
             case Some(_: Withdrew) =>
               Effect.reply(replyTo)(WithdrawSucceeded(balance))
@@ -100,7 +100,7 @@ object BankAccountBehavior {
       val ANSI_YELLOW = "\u001B[33m"
       val ANSI_RESET  = "\u001B[0m"
       context.log.info(
-        s"${ANSI_YELLOW}[LEADER]${ANSI_RESET} $event [balance: ${state.balance}, resent-transactions: ${state.resentTransactions.size}]",
+        s"${ANSI_YELLOW}[LEADER]${ANSI_RESET} $event [balance: ${state.balance}, recent-transactions: ${state.recentTransactions.size}]",
       )
     }
   }
